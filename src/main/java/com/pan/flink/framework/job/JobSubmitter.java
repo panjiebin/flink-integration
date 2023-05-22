@@ -1,7 +1,7 @@
-package com.pan.flink.job;
+package com.pan.flink.framework.job;
 
-import com.pan.flink.common.CommonRegistry;
-import com.pan.flink.common.Registry;
+import com.pan.flink.framework.common.CommonRegistry;
+import com.pan.flink.framework.Registry;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class JobSubmitter {
     private JobSubmitter() {
     }
 
-    public static void run(String jobPath, String[] args) {
+    public static void submit(String jobPath, String[] args) {
         try {
             Registry<FlinkJobJobBuilder> registry = new CommonRegistry<>(jobPath, FlinkJobJobBuilder.class);
             ParameterTool parameterTool = ParameterTool.fromArgs(args);

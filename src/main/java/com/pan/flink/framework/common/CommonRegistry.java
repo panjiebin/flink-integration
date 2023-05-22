@@ -1,7 +1,8 @@
-package com.pan.flink.common;
+package com.pan.flink.framework.common;
 
 
-import com.pan.flink.annotation.Component;
+import com.pan.flink.framework.Registry;
+import com.pan.flink.framework.annotation.Component;
 import com.pan.flink.utils.ClasspathPackageScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

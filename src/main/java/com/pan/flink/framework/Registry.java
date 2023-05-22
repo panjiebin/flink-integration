@@ -1,4 +1,4 @@
-package com.pan.flink.common;
+package com.pan.flink.framework;
 
 import java.util.List;
 

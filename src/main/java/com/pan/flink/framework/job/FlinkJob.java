@@ -1,5 +1,6 @@
-package com.pan.flink.job;
+package com.pan.flink.framework.job;
 
+import com.pan.flink.framework.Executable;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**

@@ -1,4 +1,4 @@
-package com.pan.flink.annotation;
+package com.pan.flink.framework.annotation;
 
 import java.lang.annotation.*;
 

@@ -1,4 +1,4 @@
-package com.pan.flink.job;
+package com.pan.flink.framework.job;
 
 
 /**
