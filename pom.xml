@@ -6,7 +6,7 @@
 
     <groupId>com.pan</groupId>
     <artifactId>flink-integration</artifactId>
-    <version>0.1</version>
+    <version>0.0.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,7 +16,10 @@
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
         <slf4j-api.version>2.0.0-alpha2</slf4j-api.version>
-        <log4j.version>2.17.1</log4j.version>
+        <logback.version>1.3.0-alpha5</logback.version>
+        <log4j.version>2.20.0</log4j.version>
+        <junit.version>4.13.2</junit.version>
+        <mockito.version>5.3.0</mockito.version>
     </properties>
 
     <repositories>
@@ -68,30 +71,54 @@
             <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>${log4j.version}</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- test start -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-            <scope>runtime</scope>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-test-utils</artifactId>
+            <version>${flink.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- test end -->
+
+        <!--   web ui     -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-runtime-web</artifactId>
+            <version>${flink.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <profiles>
         <profile>
             <id>dev</id>
             <properties>
-                <profiles.active>dev</profiles.active>
+                <active.env>dev</active.env>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -100,20 +127,33 @@
         <profile>
             <id>qa</id>
             <properties>
-                <profiles.active>qa</profiles.active>
+                <active.env>qa</active.env>
             </properties>
         </profile>
         <profile>
             <id>prod</id>
             <properties>
-                <profiles.active>prod</profiles.active>
+                <active.env>prod</active.env>
             </properties>
         </profile>
     </profiles>
 
     <build>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources/${active.env}</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>dev/*</exclude>
+                    <exclude>qa/*</exclude>
+                    <exclude>prod/*</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
-
             <!-- Java Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -146,6 +186,7 @@
                                     <exclude>com.google.code.findbugs:jsr305</exclude>
                                     <exclude>org.slf4j:*</exclude>
                                     <exclude>org.apache.logging.log4j:*</exclude>
+                                    <exclude>ch.qos.logback:*</exclude>
                                 </excludes>
                             </artifactSet>
                             <filters>
@@ -163,7 +204,7 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.pan.DataStreamJob</mainClass>
+                                    <mainClass>com.pan.flink.FlinkJobApplication</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

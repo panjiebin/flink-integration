@@ -1,4 +1,4 @@
-package com.pan.flink.framework;
+package com.pan.flink.framework.job;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 
@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * @author panjb
  */
-public interface ConfigLoader extends Serializable {
+public interface JobConfigLoader extends Serializable {
 
     /**
      * load configuration

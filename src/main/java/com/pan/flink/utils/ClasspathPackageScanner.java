@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -18,22 +15,26 @@ public class ClasspathPackageScanner {
 
     public static final String PROTOCOL_JAR = "jar";
     public static final String PROTOCOL_FILE = "file";
+    public static final String CLASS_FILE = ".class";
 
-    public static Set<Class<?>> scan(String basePackage) {
+    private ClasspathPackageScanner() {
+    }
+
+    public static List<Class<?>> scan(String basePackage) {
         return doScan(basePackage, Thread.currentThread().getContextClassLoader());
     }
 
-    public static Set<Class<?>> scan(String basePackage, ClassLoader classLoader) {
+    public static List<Class<?>> scan(String basePackage, ClassLoader classLoader) {
         return doScan(basePackage, classLoader);
     }
 
-    private static Set<Class<?>> doScan(String basePackage, ClassLoader classLoader) {
+    private static List<Class<?>> doScan(String basePackage, ClassLoader classLoader) {
         String path = basePackage.replaceAll("\\.", "/");
         URL url = classLoader.getResource(path);
         if (url == null) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
-        Set<Class<?>> allClass = new HashSet<>();
+        List<Class<?>> allClass = new ArrayList<>();
         String protocol = url.getProtocol();
         if (PROTOCOL_JAR.equalsIgnoreCase(protocol)) {
             allClass.addAll(getJarClasses(url, basePackage));
@@ -43,8 +44,8 @@ public class ClasspathPackageScanner {
         return allClass;
     }
 
-    private static Set<Class<?>> getJarClasses(URL url, String packagePath) {
-        Set<Class<?>> res = new HashSet<>();
+    private static List<Class<?>> getJarClasses(URL url, String packagePath) {
+        List<Class<?>> res = new ArrayList<>();
         try {
             JarURLConnection conn = (JarURLConnection) url.openConnection();
             if (conn != null) {
@@ -70,25 +71,39 @@ public class ClasspathPackageScanner {
         return res;
     }
 
-    public static Set<Class<?>> getFileClasses(URL url, String packagePath) {
-        Set<Class<?>> allClasses = new HashSet<>();
+    public static List<Class<?>> getFileClasses(URL url, String packagePath) {
+        packagePath = packagePath.replaceAll("\\.", "/");
+        List<Class<?>> allClasses = new ArrayList<>();
         String filePath = url.getFile();
         File dir = new File(filePath);
-        String[] fileNames = dir.list();
-        if (fileNames == null) {
-            return allClasses;
-        }
-        for (String fileName : fileNames) {
-            if (fileName.endsWith(".class")) {
-                fileName = fileName.substring(0, fileName.indexOf(".class"));
-                try {
-                    Class<?> aClass = Class.forName(packagePath + "." + fileName);
-                    allClasses.add(aClass);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+        List<File> classFiles = new ArrayList<>();
+        listFiles(dir, classFiles);
+        try {
+            for (File file : classFiles) {
+                String fPath = file.getAbsolutePath().replaceAll("\\\\","/") ;
+                String className = fPath.substring(fPath.lastIndexOf(packagePath));
+                className = className.replace(".class","").replaceAll("/", ".");
+                Class<?> aClass = Class.forName(className);
+                allClasses.add(aClass);
             }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
         return allClasses;
+    }
+
+    private static void listFiles(File dir, List<File> fileList) {
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    listFiles(file, fileList);
+                }
+            }
+        } else {
+            if(dir.getName().endsWith(CLASS_FILE)) {
+                fileList.add(dir);
+            }
+        }
     }
 }

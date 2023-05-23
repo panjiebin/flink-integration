@@ -1,6 +1,6 @@
-package com.pan.flink.framework.config;
+package com.pan.flink.framework.common;
 
-import com.pan.flink.framework.ConfigLoader;
+import com.pan.flink.framework.job.JobConfigLoader;
 import com.pan.flink.utils.ClasspathConfigFileLoader;
 import org.apache.flink.api.java.utils.ParameterTool;
 
@@ -10,7 +10,7 @@ import org.apache.flink.api.java.utils.ParameterTool;
  * Read configuration files in the classpath
  * @author panjb
  */
-public class DefaultFileConfigLoader implements ConfigLoader {
+public class DefaultFileConfigLoader implements JobConfigLoader {
 
     @Override
     public ParameterTool load(String jobName) throws Exception {

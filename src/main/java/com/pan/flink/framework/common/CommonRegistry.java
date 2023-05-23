@@ -61,8 +61,8 @@ public class CommonRegistry<T> implements Serializable, Registry<T> {
             } else {
                 this.components.put(component.value(), t);
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Register component: [{}]", component.value());
+            if (logger.isInfoEnabled()) {
+                logger.info("Register component: [{}]", component.value());
             }
         } catch (InstantiationException | IllegalAccessException e) {
             if (logger.isErrorEnabled()) {
@@ -75,7 +75,7 @@ public class CommonRegistry<T> implements Serializable, Registry<T> {
         if (logger.isDebugEnabled()) {
             logger.debug("Scanning package [{}].", pkgName);
         }
-        Set<Class<?>> allClass = ClasspathPackageScanner.scan(pkgName);
+        List<Class<?>> allClass = ClasspathPackageScanner.scan(pkgName);
         for (Class<?> aClass : allClass) {
             if (tClass.isAssignableFrom(aClass) && aClass.getAnnotation(Component.class) != null) {
                 this.register((Class<T>) aClass);

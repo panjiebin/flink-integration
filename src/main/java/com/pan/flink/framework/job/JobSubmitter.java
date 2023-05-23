@@ -32,28 +32,34 @@ public class JobSubmitter {
             Registry<FlinkJobJobBuilder> registry = new CommonRegistry<>(jobPath, FlinkJobJobBuilder.class);
             ParameterTool parameterTool = ParameterTool.fromArgs(args);
             String jobs = parameterTool.get(SUBMITTED_JOBS);
-            if (logger.isInfoEnabled()) {
-                logger.info("Submitted flink jobs: [{}]", jobs);
-            }
             if (StringUtils.isBlank(jobs)) {
                 List<FlinkJobJobBuilder> builders = registry.getAll();
                 for (FlinkJobJobBuilder builder : builders) {
-                    builder.build(args).execute();
+                    FlinkJob job = builder.build(args);
+                    job.execute();
+                    if (logger.isInfoEnabled()) {
+                        logger.info("Submitted flink jobs: [{}]", job.getName());
+                    }
                 }
             } else {
                 String[] submittedJobs = jobs.split(",");
-                for (String job : submittedJobs) {
-                    FlinkJobJobBuilder builder = registry.get(job);
+                for (String builderName : submittedJobs) {
+                    FlinkJobJobBuilder builder = registry.get(builderName);
                     if (builder != null) {
-                        builder.build(args).execute();
+                        FlinkJob job = builder.build(args);
+                        job.execute();
+                        if (logger.isInfoEnabled()) {
+                            logger.info("Submitted flink jobs: [{}]", job.getName());
+                        }
                     } else {
                         if (logger.isWarnEnabled()) {
-                            logger.warn("Could not found flink job builder [{}]", job);
+                            logger.warn("Could not found flink job builder [{}]", builderName);
                         }
                     }
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             if (logger.isErrorEnabled()) {
                 logger.error("submit flink job error:", e);
             }
