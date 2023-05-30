@@ -3,7 +3,6 @@ package com.pan.flink.framework.job;
 import com.pan.flink.framework.common.DefaultFileConfigLoader;
 import com.pan.flink.utils.ClasspathConfigFileLoader;
 import com.pan.flink.framework.common.ConfigPropertyParser;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.RestOptions;
@@ -24,7 +23,7 @@ public abstract class AbstractFlinkJobBuilder<T> implements FlinkJobJobBuilder {
     public final FlinkJob build(String[] args) throws Exception {
         // load config
         ParameterTool jobConfig = this.loadJobConfig(args);
-        StreamExecutionEnvironment env = getExecutionEnvironment(jobConfig);
+        StreamExecutionEnvironment env = this.getExecutionEnvironment(jobConfig);
         if (this.isGlobalConfig()) {
             // 配置全局生效，在算子里面可以直接获取配置
             env.getConfig().setGlobalJobParameters(jobConfig);
