@@ -10,17 +10,16 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <flink.version>1.17.0</flink.version>
+        <flink.version>1.18.0</flink.version>
         <target.java.version>1.8</target.java.version>
-        <scala.binary.version>2.12</scala.binary.version>
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
-        <slf4j-api.version>2.0.0-alpha2</slf4j-api.version>
-        <logback.version>1.3.0-alpha5</logback.version>
-        <log4j.version>2.20.0</log4j.version>
+        <slf4j-api.version>2.0.9</slf4j-api.version>
+        <logback.version>1.3.0</logback.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.3.0</mockito.version>
         <httpclient.version>4.5.14</httpclient.version>
+        <flink.connector.kafka.version>3.0.1-1.18</flink.connector.kafka.version>
     </properties>
 
     <repositories>
@@ -52,17 +51,30 @@
             <version>${flink.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-test-utils</artifactId>
+            <version>${flink.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-runtime-web</artifactId>
+            <version>${flink.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Add connector dependencies here. They must be in the default scope (compile). -->
-
-        <!-- Example:
-
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka</artifactId>
+            <version>${flink.connector.kafka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-files</artifactId>
             <version>${flink.version}</version>
         </dependency>
-        -->
 
         <!-- Add logging framework, to produce console output when running in the IDE. -->
         <!-- These dependencies are excluded from the application JAR by default. -->
@@ -97,22 +109,9 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-test-utils</artifactId>
-            <version>${flink.version}</version>
-            <scope>test</scope>
-        </dependency>
         <!-- test end -->
 
-        <!--   web ui     -->
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-runtime-web</artifactId>
-            <version>${flink.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
+        <!-- Third part dependencies-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -133,9 +132,9 @@
             </activation>
         </profile>
         <profile>
-            <id>qa</id>
+            <id>test</id>
             <properties>
-                <active.env>qa</active.env>
+                <active.env>test</active.env>
             </properties>
         </profile>
         <profile>

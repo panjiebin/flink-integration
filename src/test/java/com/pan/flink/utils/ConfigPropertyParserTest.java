@@ -1,7 +1,7 @@
 package com.pan.flink.utils;
 
 import com.pan.flink.framework.annotation.ConfigProperty;
-import com.pan.flink.framework.common.ConfigPropertyParser;
+import com.pan.flink.framework.ConfigPropertyParser;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.junit.Assert;
 import org.junit.Before;

@@ -1,6 +1,7 @@
 package com.pan.flink.framework.job;
 
-import com.pan.flink.framework.common.CommonRegistry;
+import com.pan.flink.framework.CommonRegistry;
+import com.pan.flink.framework.Constants;
 import com.pan.flink.framework.Registry;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -12,9 +13,9 @@ import java.util.List;
 /**
  * Scans and builds executable flink jobs in the specified package name.
  *
- * <p>The flink job builder must implement the {@link FlinkJobJobBuilder}.
+ * <p>The flink job builder must implement the {@link FlinkJobBuilder}.
  * By default, all jobs are submitted.You can specify one or more jobs to be submitted
- * using the {@link #SUBMITTED_JOBS} parameter, separated by commas (,)
+ * using the {@link Constants#CONF_SUBMITTED_JOBS} parameter, separated by commas (,)
  *
  * @author panjb
  */
@@ -22,19 +23,23 @@ public class JobSubmitter {
 
     private final static Logger logger = LoggerFactory.getLogger(JobSubmitter.class);
 
-    private static final String SUBMITTED_JOBS = "jobs";
-
     private JobSubmitter() {
     }
 
     public static void submit(String jobPath, String[] args) {
         try {
-            Registry<FlinkJobJobBuilder> registry = new CommonRegistry<>(jobPath, FlinkJobJobBuilder.class);
+            Registry<FlinkJobBuilder> registry = new CommonRegistry<>(jobPath, FlinkJobBuilder.class);
             ParameterTool parameterTool = ParameterTool.fromArgs(args);
-            String jobs = parameterTool.get(SUBMITTED_JOBS);
+            String jobs = parameterTool.get(Constants.CONF_SUBMITTED_JOBS);
             if (StringUtils.isBlank(jobs)) {
-                List<FlinkJobJobBuilder> builders = registry.getAll();
-                for (FlinkJobJobBuilder builder : builders) {
+                if (logger.isInfoEnabled()) {
+                    logger.info("No job specified to submit.");
+                }
+                return;
+            }
+            if (Constants.VAL_SUBMITTED_JOBS_ALL.equals(jobs)) {
+                List<FlinkJobBuilder> builders = registry.getAll();
+                for (FlinkJobBuilder builder : builders) {
                     FlinkJob job = builder.build(args);
                     job.execute();
                     if (logger.isInfoEnabled()) {
@@ -44,7 +49,7 @@ public class JobSubmitter {
             } else {
                 String[] submittedJobs = jobs.split(",");
                 for (String builderName : submittedJobs) {
-                    FlinkJobJobBuilder builder = registry.get(builderName);
+                    FlinkJobBuilder builder = registry.get(builderName);
                     if (builder != null) {
                         FlinkJob job = builder.build(args);
                         job.execute();
@@ -59,7 +64,6 @@ public class JobSubmitter {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             if (logger.isErrorEnabled()) {
                 logger.error("submit flink job error:", e);
             }

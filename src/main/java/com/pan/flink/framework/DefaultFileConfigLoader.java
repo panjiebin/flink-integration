@@ -1,4 +1,4 @@
-package com.pan.flink.framework.common;
+package com.pan.flink.framework;
 
 import com.pan.flink.framework.job.JobConfigLoader;
 import com.pan.flink.utils.ClasspathConfigFileLoader;

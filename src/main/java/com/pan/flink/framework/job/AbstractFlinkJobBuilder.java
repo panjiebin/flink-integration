@@ -1,11 +1,13 @@
 package com.pan.flink.framework.job;
 
-import com.pan.flink.framework.common.DefaultFileConfigLoader;
+import com.pan.flink.framework.Constants;
+import com.pan.flink.framework.DefaultFileConfigLoader;
 import com.pan.flink.utils.ClasspathConfigFileLoader;
-import com.pan.flink.framework.common.ConfigPropertyParser;
+import com.pan.flink.framework.ConfigPropertyParser;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.RestOptions;
+import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
@@ -14,10 +16,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * @param <T> Type of job configuration
  * @author panjb
  */
-public abstract class AbstractFlinkJobBuilder<T> implements FlinkJobJobBuilder {
+public abstract class AbstractFlinkJobBuilder<T> implements FlinkJobBuilder {
 
-    private static final String MODE_LOCAL = "local.web";
-    private static final String REST_PORT = "rest.port";
 
     @Override
     public final FlinkJob build(String[] args) throws Exception {
@@ -34,15 +34,22 @@ public abstract class AbstractFlinkJobBuilder<T> implements FlinkJobJobBuilder {
     }
 
     private StreamExecutionEnvironment getExecutionEnvironment(ParameterTool jobConfig) {
-        boolean localWeb = jobConfig.getBoolean(MODE_LOCAL, false);
+        boolean localWeb = jobConfig.getBoolean(Constants.CONF_MODE_LOCAL, false);
         if (localWeb) {
             Configuration configuration = new Configuration();
-            String port = jobConfig.get(REST_PORT, "8081");
+            String port = jobConfig.get(Constants.CONF_REST_PORT, "8081");
             configuration.setString(RestOptions.BIND_PORT, port);
             return StreamExecutionEnvironment.getExecutionEnvironment(configuration);
         }
         return StreamExecutionEnvironment.getExecutionEnvironment();
     }
+
+    /**
+     * configure checkpoint
+     * @param env {@link StreamExecutionEnvironment}
+     * @param conf job config
+     */
+    protected abstract void configCheckpoint(StreamExecutionEnvironment env, T conf);
 
     /**
      * real build job

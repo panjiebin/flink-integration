@@ -1,6 +1,5 @@
-package com.pan.flink.framework.common;
+package com.pan.flink.framework;
 
-import com.pan.flink.framework.PropertyValueConverter;
 import com.pan.flink.framework.annotation.ConfigProperty;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.slf4j.Logger;

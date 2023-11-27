@@ -5,5 +5,5 @@ package com.pan.flink.framework.job;
  *
  * @author panjb
  */
-public interface FlinkJobJobBuilder extends JobBuilder<FlinkJob> {
+public interface FlinkJobBuilder extends JobBuilder<FlinkJob> {
 }
