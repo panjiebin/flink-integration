@@ -13,7 +13,7 @@ public class FlinkJobApplication {
 
     public static void main(String[] args) {
         ParameterTool config = ParameterTool.fromArgs(args);
-        String jobPackage = config.get(Constants.CONF_SUBMITTED_JOBS, "com.pan.flink.jobs");
+        String jobPackage = config.get(Constants.CONF_JOB_PKG, "com.pan.flink.jobs");
         JobSubmitter.submit(jobPackage, args);
     }
 }

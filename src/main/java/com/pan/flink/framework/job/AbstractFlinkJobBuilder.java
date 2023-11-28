@@ -7,8 +7,9 @@ import com.pan.flink.framework.ConfigPropertyParser;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.RestOptions;
-import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Basic flink job builder
@@ -18,6 +19,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  */
 public abstract class AbstractFlinkJobBuilder<T> implements FlinkJobBuilder {
 
+    private final static Logger logger = LoggerFactory.getLogger(AbstractFlinkJobBuilder.class);
 
     @Override
     public final FlinkJob build(String[] args) throws Exception {
@@ -30,7 +32,7 @@ public abstract class AbstractFlinkJobBuilder<T> implements FlinkJobBuilder {
         }
         T config = this.convertConfig(jobConfig);
         this.doBuild(env, config);
-        return new FlinkJob(this.getJobName(), env);
+        return new DefaultFlinkJob(this.getJobName(), env);
     }
 
     private StreamExecutionEnvironment getExecutionEnvironment(ParameterTool jobConfig) {
@@ -60,6 +62,7 @@ public abstract class AbstractFlinkJobBuilder<T> implements FlinkJobBuilder {
 
     /**
      * Create a job configuration bean
+     * @return job configuration bean
      */
     protected abstract T createConfig();
 
@@ -92,9 +95,15 @@ public abstract class AbstractFlinkJobBuilder<T> implements FlinkJobBuilder {
         JobConfigLoader jobConfigLoader = this.getJobConfigLoader();
         if (jobConfigLoader != null) {
             ParameterTool jobConfig = jobConfigLoader.load(this.getJobName());
-            config = config.mergeWith(jobConfig);
+            if (jobConfig != null) {
+                config = null == config ? jobConfig : config.mergeWith(jobConfig);
+            }
+        } else {
+            if (logger.isWarnEnabled()) {
+                logger.warn("Could not found a job config loader.");
+            }
         }
-        config = config.mergeWith(ParameterTool.fromArgs(args));
+        config = null == config ? ParameterTool.fromArgs(args): config.mergeWith(ParameterTool.fromArgs(args));
         return config;
     }
 

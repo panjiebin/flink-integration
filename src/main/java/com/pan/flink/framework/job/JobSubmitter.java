@@ -40,22 +40,14 @@ public class JobSubmitter {
             if (Constants.VAL_SUBMITTED_JOBS_ALL.equals(jobs)) {
                 List<FlinkJobBuilder> builders = registry.getAll();
                 for (FlinkJobBuilder builder : builders) {
-                    FlinkJob job = builder.build(args);
-                    job.execute();
-                    if (logger.isInfoEnabled()) {
-                        logger.info("Submitted flink jobs: [{}]", job.getName());
-                    }
+                    buildAndExecJob(args, builder);
                 }
             } else {
                 String[] submittedJobs = jobs.split(",");
                 for (String builderName : submittedJobs) {
                     FlinkJobBuilder builder = registry.get(builderName);
                     if (builder != null) {
-                        FlinkJob job = builder.build(args);
-                        job.execute();
-                        if (logger.isInfoEnabled()) {
-                            logger.info("Submitted flink jobs: [{}]", job.getName());
-                        }
+                        buildAndExecJob(args, builder);
                     } else {
                         if (logger.isWarnEnabled()) {
                             logger.warn("Could not found flink job builder [{}]", builderName);
@@ -67,6 +59,14 @@ public class JobSubmitter {
             if (logger.isErrorEnabled()) {
                 logger.error("submit flink job error:", e);
             }
+        }
+    }
+
+    private static void buildAndExecJob(String[] args, FlinkJobBuilder builder) throws Exception {
+        FlinkJob job = builder.build(args);
+        job.execute();
+        if (logger.isInfoEnabled()) {
+            logger.info("Submitted flink jobs: [{}]", job.getName());
         }
     }
 }
