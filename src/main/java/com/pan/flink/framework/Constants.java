@@ -12,5 +12,6 @@ public interface Constants {
     String CONF_SUBMITTED_JOBS = "jobs";
     String CONF_MODE_LOCAL = "local";
     String CONF_REST_PORT = "rest.port";
+    String CONF_STATE_TTL = "state.ttl";
     String VAL_SUBMITTED_JOBS_ALL = "all";
 }

@@ -31,6 +31,7 @@ public abstract class AbstractFlinkJobBuilder<T> implements FlinkJobBuilder {
             env.getConfig().setGlobalJobParameters(jobConfig);
         }
         T config = this.convertConfig(jobConfig);
+        this.configCheckpoint(env, config);
         this.doBuild(env, config);
         return new DefaultFlinkJob(this.getJobName(), env);
     }

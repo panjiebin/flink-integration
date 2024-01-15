@@ -1,5 +1,7 @@
 package com.pan.flink.utils;
 
+import com.pan.flink.jobs.indicator.pojo.DomainConfig;
+import com.pan.flink.jobs.indicator.pojo.DomainConfigResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.type.TypeReference;
@@ -104,7 +106,7 @@ public class HttpHelper {
         return null;
     }
 
-    public static <T> T doPost(String url, Map<String, String> headers, TypeReference<T> type, String payload) {
+    public static void doPost(String url, Map<String, String> headers, String payload) {
         HttpPost httpPost = new HttpPost(url);
         if (headers != null) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -117,7 +119,11 @@ public class HttpHelper {
             StringEntity stringEntity = new StringEntity(payload);
             httpPost.setEntity(stringEntity);
             httpResponse = httpClient.execute(httpPost);
-            return parseResponse(httpResponse, type);
+            if (HttpStatus.SC_OK == httpResponse.getStatusLine().getStatusCode()) {
+                if (logger.isInfoEnabled()) {
+                    logger.info("post successful");
+                }
+            }
         } catch (IOException e) {
             if (logger.isErrorEnabled()) {
                 logger.error("http request error", e);
@@ -133,11 +139,11 @@ public class HttpHelper {
                 e.printStackTrace();
             }
         }
-        return null;
     }
 
+
     private static <T> T parseResponse(CloseableHttpResponse httpResponse, TypeReference<T> type) throws IOException {
-        if(HttpStatus.SC_OK == httpResponse.getStatusLine().getStatusCode()){
+        if(HttpStatus.SC_OK == httpResponse.getStatusLine().getStatusCode()) {
             String content = EntityUtils.toString(httpResponse.getEntity());
             if (type == null) {
                 return (T) content;
