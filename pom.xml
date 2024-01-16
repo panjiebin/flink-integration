@@ -140,6 +140,13 @@
             <artifactId>httpclient</artifactId>
             <version>${httpclient.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.25</version>
+        </dependency>
+
 
 
     </dependencies>
@@ -180,7 +187,6 @@
                     <exclude>dev/*</exclude>
                     <exclude>qa/*</exclude>
                     <exclude>prod/*</exclude>
-                    <exclude>logback.xml</exclude>
                 </excludes>
             </resource>
         </resources>

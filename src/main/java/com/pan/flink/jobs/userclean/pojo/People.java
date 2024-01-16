@@ -77,4 +77,9 @@ public class People implements Serializable {
     public void setRoad(String road) {
         this.road = road;
     }
+
+    @Override
+    public String toString() {
+        return this.name + "," + this.phone + "," + this.address;
+    }
 }

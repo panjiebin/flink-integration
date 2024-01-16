@@ -29,14 +29,13 @@ import java.time.Duration;
 /**
  * @author panjb
  */
-@Component("userClean")
+//@Component("userClean")
 public class UserCleanBuilder extends BaseFlinkJobBuilder {
 
     @Override
     protected void doBuild(StreamExecutionEnvironment env, ParameterTool config) {
-        env.setParallelism(8);
         FileSource<String> source = FileSource.forRecordStreamFormat(new TextLineInputFormat(),
-                Path.fromLocalFile(new File("D:/test/test2"))
+                Path.fromLocalFile(new File("D:/test/data3"))
         ).build();
         DataStreamSource<String> sourceStream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "csv-file-source");
         OutputTag<String> filterTag = new OutputTag<>("filterTag", Types.STRING);
@@ -45,8 +44,8 @@ public class UserCleanBuilder extends BaseFlinkJobBuilder {
                 .filter(new PeopleFilterFunction())
                 .keyBy(People::getPhone)
                 .process(new BestNameSelector());
-        peopleDataStream.map(new BeanToStringFunction<>()).sinkTo(this.buildFileSink("D:/test/result/merge"));
-        peopleDataStream.getSideOutput(filterTag).sinkTo(this.buildFileSink("D:/test/result/filter")).setParallelism(1);
+        peopleDataStream.map(new BeanToStringFunction<>()).sinkTo(this.buildFileSink("D:/test/result2/merge"));
+        peopleDataStream.getSideOutput(filterTag).sinkTo(this.buildFileSink("D:/test/result2/filter")).setParallelism(1);
 
     }
 

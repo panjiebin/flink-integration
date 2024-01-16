@@ -1,7 +1,5 @@
 package com.pan.flink.utils;
 
-import com.pan.flink.jobs.indicator.pojo.DomainConfig;
-import com.pan.flink.jobs.indicator.pojo.DomainConfigResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.type.TypeReference;

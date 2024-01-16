@@ -39,6 +39,7 @@ public class BestNameSelector extends KeyedProcessFunction<String, People, Peopl
                 // 上一个输出的数据需要被过滤
                 ctx.output(filterTag, curr.f1);
                 out.collect(people);
+                System.out.println(people);
                 currPeople.update(Tuple2.of(people.getName(), people.getId()));
             }
         }

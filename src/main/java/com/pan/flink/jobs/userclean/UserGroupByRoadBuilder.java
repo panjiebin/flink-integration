@@ -8,7 +8,6 @@ import com.pan.flink.jobs.userclean.function.PeopleStringEncoder;
 import com.pan.flink.jobs.userclean.function.RoadBucketAssigner;
 import com.pan.flink.jobs.userclean.pojo.People;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.MemorySize;
 import org.apache.flink.connector.file.sink.FileSink;
@@ -36,7 +35,7 @@ public class UserGroupByRoadBuilder extends BaseFlinkJobBuilder {
     protected void doBuild(StreamExecutionEnvironment env, ParameterTool config) {
         env.setParallelism(8);
         FileSource<String> source = FileSource.forRecordStreamFormat(new TextLineInputFormat(),
-                Path.fromLocalFile(new File("D:/test/result/merge"))
+                Path.fromLocalFile(new File("D:/test/result2/merge/2024-01-16--22"))
         ).build();
         DataStreamSource<String> sourceStream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "csv-file-source");
         SingleOutputStreamOperator<People> peopleStream = sourceStream.map(new PeopleMapFunction2())
@@ -45,15 +44,17 @@ public class UserGroupByRoadBuilder extends BaseFlinkJobBuilder {
                 .process(new KeyedProcessFunction<String, People, People>() {
                     @Override
                     public void processElement(People value, Context ctx, Collector<People> out) throws Exception {
-                        out.collect(value);
+                        if (value != null) {
+                            out.collect(value);
+                        }
                     }
                 });
         DefaultRollingPolicy<People, String> rollingPolicy = DefaultRollingPolicy.builder()
-                .withRolloverInterval(Duration.ofMinutes(15L))
-                .withInactivityInterval(Duration.ofMinutes(5L))
+                .withRolloverInterval(Duration.ofMinutes(20L))
+                .withInactivityInterval(Duration.ofMinutes(15L))
                 .withMaxPartSize(MemorySize.ofMebiBytes(125L))
                 .build();
-        FileSink<People> fileSink = FileSink.forRowFormat(new Path("D:/test/merge"), new PeopleStringEncoder())
+        FileSink<People> fileSink = FileSink.forRowFormat(new Path("D:/test/result6"), new PeopleStringEncoder())
                 .withRollingPolicy(rollingPolicy)
                 .withBucketAssigner(new RoadBucketAssigner())
                 .withOutputFileConfig(OutputFileConfig.builder().withPartSuffix(".csv").build())
