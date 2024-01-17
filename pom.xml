@@ -15,7 +15,7 @@
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
         <slf4j-api.version>1.7.36</slf4j-api.version>
-        <logback.version>1.2.13</logback.version>
+        <log4j.version>2.17.1</log4j.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.3.0</mockito.version>
         <httpclient.version>4.5.14</httpclient.version>
@@ -107,15 +107,21 @@
             <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
             <scope>runtime</scope>
         </dependency>
 
