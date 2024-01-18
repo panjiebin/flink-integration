@@ -107,12 +107,12 @@ hdfs:///flink-jobs/flink-integration-0.0.1.jar \
 
 ### 2 取消并生成savepoint
 ```shell
-./bin/flink cancel -t yarn-application -Dyarn.application.id=application_XXXX_YY <jobId>
+./bin/flink cancel -t yarn-application -s -Dyarn.application.id=application_XXXX_YY <jobId>
 ```
 ### 3 从savepoint恢复任务
 ```shell
 ./bin/flink run-application -t yarn-application \
--s hdfs:///flink/savepoints/savepoint-<jobId> \
+-s <savepointPath> \
 -Dyarn.application.name=word-count-job \
 -Djobmanager.memory.process.size=1G \
 -Dtaskmanager.memory.process.size=2G \
